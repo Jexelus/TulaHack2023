@@ -39,7 +39,7 @@
                     </button>
                 </div>
                 {% if current_user.role == 'root' or current_user.role == 'manager' %}
-                    <button class="btn btn-info" id="btn-profile">
+                    <button class="btn btn-info" id="profile-btn">
                         Профиль
                     </button>
                 {% endif %}
@@ -64,9 +64,13 @@
                                             <div class="task_state" style="text-align: center;">
                                                 Состояние: {{ task.task_state }}
                                             </div>
-                                            {% if task.task_group == current_user.role or task.task_group == 'manager' or task.task_group == 'root' %}
-                                                <button class="btn btn-primary"> Отметить как выполненное </button>
-                                            {% endif %}
+                                            <form>
+                                                <input type="hidden" name="id" value="{{task.task_id}}" id="task_id">
+                                                {% if task.task_group == current_user.role or task.task_group == 'manager' or task.task_group == 'root' %}
+                                                    <button class="btn btn-primary" id='task-btn'> Отметить как выполненное </button>
+                                                    <button class="btn btn-primary" id='task-btn'> Удалить </button>
+                                                {% endif %}
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
@@ -126,6 +130,11 @@
             }
         </style>
         <script>
+            $(function(){
+                $("#profile-btn").on('click', function(){
+                    window.location.replace('/profile');
+                });
+            });
             $(function(){
                 $("#profile-btn").on('click', function(){
                     window.location.replace('/profile');
