@@ -53,6 +53,25 @@ def login_post():
     #session['login'] = user.login
     return jsonify({'msg': 'ok'}), 200
 
+@auth.route('/new_user', methods=['POST'])
+def new_user():
+    pocket = request.json
+    data = pocket['reg_data']
+    if User.query.filter_by(login=data['email']).first() or User.query.filter_by(login=data['login']).first():
+        return jsonify({'msg': 'alredy in system!'})
+    user = User(email=data['email'], login=data['login'], password=data['password'], role=data['role'], telegram=data['telegramm'])
+    db.session.add(user)
+    db.session.commit()
+    return jsonify({'msg':'ok'}), 200
+
+@auth.route('/delete_user', methods=['POST'])
+def delete_user():
+    pocket = request.json
+    id = pocket['id']
+    db.session.delete(User.query.filter_by(id=id).first())
+    db.session.commit()
+    return jsonify({'msg':'ok'}), 200
+
 @auth.route('/logout')
 @login_required
 def logout():

@@ -26,5 +26,7 @@ class Tasks(db.Model):
     task_body = db.Column(db.Text, nullable=False)
     task_group = db.Column(db.Text, nullable=False)
     task_state = db.Column(db.Text, nullable=False)
+    completed_day = db.Column(db.Text)
+    completed_mounth = db.Column(db.Text)
     completed_by = db.Column(db.String(64))
 

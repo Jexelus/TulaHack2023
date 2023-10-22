@@ -3,9 +3,436 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="http://cdn.pydata.org/bokeh/release/bokeh-0.12.5.min.css" rel="stylesheet">
+    <link href="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.0.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <title>Profile</title>
 </head>
 <body>
-    
+    <div aria-live="polite" aria-atomic="true" class="position-relative">
+        <div class="toast-container position-absolute top-0 end-0 p-3" id="toast_cont"></div>
+    </div>
+    <div class="header" style="display: flex; justify-items: center; align-items: center; justify-content: space-between;">
+        <div class="button_div">
+            <button class="btn btn-success" id="btn-back" style="margin-left: 15px; margin-top: 15px; margin-bottom: 15px;"> Назад </button>
+        </div>
+        <div class="brand">
+            <p> RLEA CONTROL PANEL <p>
+        </div>
+    </div>
+    <div class="container">
+        <div class="card" style="width: 90%;">
+            <div class="card-body">
+                <div class="card-title">
+                    <div class="user">
+                        <img src="{{ url_for('static', filename='img/user.png') }}" alt="#" width="60" height="60">
+                        <label for="logo">{{ user.email }}</label>
+                    </div>
+                </div>
+            {% if current_user.id == user.id %}
+                <div class="row" style="padding-top: 40px;">
+                    <div class="col-sm-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="card-title" style="text-align: center;">
+                                    Create New Staff
+                                </div>
+                                <!-- <form style="padding-top: 30px;"> -->
+                                    <div class="form-item">
+                                        <label for="email">Email</label>
+                                        <input type="text" id="email" name="email" class="form-control">
+                                    </div>
+                                    <div class="form-item">
+                                        <label for="email">Login</label>
+                                        <input type="text" name="login" id="login" class="form-control">
+                                    </div>
+                                    <div class="form-item">
+                                        <label for="email">Password</label>
+                                        <input type="text" name="Password" id="password" class="form-control">
+                                    </div>
+                                    <div class="form-item">
+                                        <label for="telegramm">Telegramm</label>
+                                        <input type="text" name="telegramm" id="telegramm" class="form-control">
+                                    </div>
+                                    <div class="form-item">
+                                        <label for="role">Role</label>
+                                        <select class="form-select" name="role" id="role">
+                                            <option value="manager" selected> Manager </option>
+                                            <option value="employee" selected> Employee </option>
+                                        </select>
+                                    </div>
+                                    <div class="form-item">
+                                        <button class="btn btn-primary" id="new_user_make">Создать</button>
+                                    </div>
+                                    <script>
+                                        $(function(){
+                                            $('#new_user_make').on('click', function(){
+                                                var email = document.getElementById('email').value;
+                                                var login = document.getElementById('login').value;
+                                                var password = document.getElementById('password').value; 
+                                                var role = document.getElementById('password').value;
+                                                var telegramm = document.getElementById('telegramm').value;
+                                                data = {
+                                                    email:email,
+                                                    login:login,
+                                                    password:password,
+                                                    role:role,
+                                                    telegramm:telegramm
+                                                }
+                                                if ((email == null || email == '') && (login == null || login == '') && (password == null || password == '')) {
+                                                    var wrapper = document.createElement('div');
+                                                    wrapper.innerHTML= '<div class="toast" role="alert" aria-live="assertive" aria-atomic="true"><div class="toast-header"><img src="" class="rounded me-2" alt=""><strong class="me-auto">RLEA</strong><small>Staff_Maker</small><button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Закрыть"></button></div><div class="toast-body">Неправильно заполнены поля</div></div>'
+                                                    var body = document.getElementById('toast_cont')
+                                                    body.appendChild(wrapper)
+                                                    console.log(wrapper)
+                                                    $('.toast').toast('show');
+                                                }
+                                                fetch('/auth/new_user', {
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'Content-Type': 'application/json',
+                                                        'Access-Control-Allow-Origin': '*',
+                                                    },
+                                                    body: JSON.stringify({
+                                                        reg_data:data
+                                                    }),
+                                                }).then(response => {
+                                                    var wrapper = document.createElement('div');
+                                                    wrapper.innerHTML= '<div class="toast" role="alert" aria-live="assertive" aria-atomic="true"><div class="toast-header"><img src="" class="rounded me-2" alt=""><strong class="me-auto">RLEA</strong><small>Staff_Maker</small><button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Закрыть"></button></div><div class="toast-body">Success</div></div>'
+                                                    var body = document.getElementById('toast_cont')
+                                                    body.appendChild(wrapper)
+                                                    $('.toast').toast('show');
+                                                });
+
+                                                
+                                            });
+                                        });
+                                    </script>
+                                <!-- </form> -->
+                            </div>                          
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="card-title">
+                                    Create Task
+                                </div>
+                                <div class="form-item">
+                                    <label for="task_header">Task_header</label>
+                                    <input type="text" id="task_header" name="task_header" class="form-control">
+                                </div>
+                                <div class="form-item">
+                                    <label for="task_body">Task_body</label>
+                                    <input type="text" id="task_body" name="task_body" class="form-control">
+                                </div>
+                                <div class="form-item">
+                                    <select class="form-select" name="task_group" id="task_group">
+                                        <option value="employee" selected> Employee </option>
+                                    </select>
+                                </div>
+                                <div class="form-item">
+                                    <button class="btn btn-primary" id="new_task_make">Создать</button>
+                                </div>
+                                <script>
+                                    $(function(){
+                                        $('#new_task_make').on('click', function(){
+                                            var task_header = document.getElementById('task_header').value;
+                                            var task_body = document.getElementById('task_body').value;
+                                            var task_group = document.getElementById('task_group').value; 
+                                            var task_state = 'in_progress'
+                                            data = {
+                                                task_header:task_header,
+                                                task_body:task_body,
+                                                task_group:task_group,
+                                                task_state:task_state
+                                            }
+                                            if ((task_header == null || task_header == '') && (task_header == null || task_header == '') && ( task_group == null ||  task_group == '')) {
+                                                var wrapper = document.createElement('div');
+                                                wrapper.innerHTML= '<div class="toast" role="alert" aria-live="assertive" aria-atomic="true"><div class="toast-header"><img src="" class="rounded me-2" alt=""><strong class="me-auto">RLEA</strong><small>Staff_Maker</small><button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Закрыть"></button></div><div class="toast-body">Неправильно заполнены поля</div></div>'
+                                                var body = document.getElementById('toast_cont')
+                                                body.appendChild(wrapper)
+                                                console.log(wrapper)
+                                                $('.toast').toast('show');
+                                            }
+                                            fetch('/new_task', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                    'Access-Control-Allow-Origin': '*',
+                                                },
+                                                body: JSON.stringify({
+                                                    task:data
+                                                }),
+                                            }).then(response => {
+                                                var wrapper = document.createElement('div');
+                                                wrapper.innerHTML= '<div class="toast" role="alert" aria-live="assertive" aria-atomic="true"><div class="toast-header"><img src="" class="rounded me-2" alt=""><strong class="me-auto">RLEA</strong><small>Staff_Maker</small><button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Закрыть"></button></div><div class="toast-body">Success</div></div>'
+                                                var body = document.getElementById('toast_cont')
+                                                body.appendChild(wrapper)
+                                                $('.toast').toast('show');
+                                            });
+
+                                            
+                                        });
+                                    });
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="card-title">
+                                    User Manager
+                                </div>
+                                <div class="user_list">
+                                    {% for user_r in users %}
+                                        <div class="user {{ user_r.id }}" style="display: flex; flex-direction: row; justify-content: space-between; border: 1px solid #000; border-radius: 5px; padding: 15px; margin-top: 15px;">
+                                            <button style="border: 0; background-color: transparent;" onclick="link({{user_r.id}})"> <img src="{{ url_for('static', filename='img/user.png') }}" alt="" width="30" height="30"> ID:{{user_r.id}}</button>
+                                            <div class="delete_button" onclick="delete_user({{user_r.id}})">
+                                                {% if user.id == user_r.id %}
+                                                    <button class="btn btn-danger" disabled>Удалить</button>    
+                                                {%else%}
+                                                    <button class="btn btn-danger">Удалить</button>
+                                                {%endif%}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                    <script>
+                                        function link(id){
+                                            window.location.replace('/profile/'+id)
+                                        }
+                                        function delete_user(id){
+                                            fetch('/auth/delete_user',{
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                    'Access-Control-Allow-Origin': '*',
+                                                },
+                                                body:JSON.stringify({
+                                                    id:id
+                                                }),
+                                            }).then(response=>{
+                                                var wrapper = document.createElement('div');
+                                                wrapper.innerHTML= '<div class="toast" role="alert" aria-live="assertive" aria-atomic="true"><div class="toast-header"><img src="" class="rounded me-2" alt=""><strong class="me-auto">RLEA</strong><small>User Manager</small><button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Закрыть"></button></div><div class="toast-body">Success</div></div>'
+                                                var body = document.getElementById('toast_cont')
+                                                body.appendChild(wrapper)
+                                                $('.toast').toast('show');
+                                            });
+                                        }
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                
+                </div>
+                {% endif %}
+            
+                <div class="row" style="padding-top: 30px;">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title">
+                            
+                            </div>
+                            <canvas id="canvas"></canvas>
+                            <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+                <script>
+                     $(document).ready(function () {
+        const config = {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: "Tasks",
+                    backgroundColor: 'rgb(255, 99, 132)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    data: [],
+                    fill: false,
+                }],
+            },
+            options: {
+                responsive: true,
+                title: {
+                    display: true,
+                    text: 'Analytic for year'
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'mounth'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Tasks'
+                        }
+                    }]
+                }
+            }
+        };
+
+        const context = document.getElementById('canvas').getContext('2d');
+
+        const lineChart = new Chart(context, config);
+
+        const source = new EventSource("/gen_analytic/{{user.id}}");
+
+        source.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+            if (config.data.labels.length === 20) {
+                config.data.labels.shift();
+                config.data.datasets[0].data.shift();
+            }
+            config.data.labels.push(data.mouth);
+            config.data.datasets[0].data.push(data.tasks_comleted);
+            lineChart.update();
+        }
+    });
+    </script>
+                        </div>
+                    </div>
+                </div>
+
+               
+                <!-- end -->
+            </div>
+        </div>
+    </div>
+    <div class="background">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
+    <script>
+        $(function(){
+            $('#btn-back').on('click', function(){
+                window.location.replace('/table');
+            });
+        });
+    </script>
+    <style>
+        .form-item{
+            margin-bottom: 15px;
+        }
+        .user{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container{
+            display: flex;
+            padding-top: 120px;
+            justify-content: center;
+            justify-items: center;
+            
+        }
+        @font-face {
+            font-family: 'Anurati';
+            src: url("{{ url_for('static',  filename='fonts/anurati_regular.otf') }}");
+        }
+        .brand{
+            padding-right: 15px;
+            display: flex;
+        }
+        .brand p{
+            font-family: 'Anurati';
+            font-size: 24px;
+            margin: 0;
+            text-align: center;
+            
+        }
+        .header{
+            width: 100vw;
+            background-color: #ffffff;
+        }
+        .background{
+            position: relative;
+            z-index: -1;
+        }
+        body {
+            margin: auto;
+            overflow: auto;
+            background: linear-gradient(315deg, rgb(206, 246, 44) 3%, rgba(60,132,206,1) 38%, rgba(48,238,226,1) 68%, rgb(40, 250, 100) 98%);
+            animation: gradient 15s ease infinite;
+            background-size: 400% 400%;
+            background-attachment: fixed;
+        }
+        
+        @keyframes gradient {
+            0% {
+                background-position: 0% 0%;
+            }
+            50% {
+                background-position: 100% 100%;
+            }
+            100% {
+                background-position: 0% 0%;
+            }
+        }
+        
+        .wave {
+            background: rgb(255 255 255 / 25%);
+            border-radius: 1000% 1000% 0 0;
+            position: fixed;
+            width: 200%;
+            height: 12em;
+            animation: wave 10s -3s linear infinite;
+            transform: translate3d(0, 0, 0);
+            opacity: 0.8;
+            bottom: 0;
+            left: 0;
+            z-index: -1;
+        }
+        
+        .wave:nth-of-type(2) {
+            bottom: -1.25em;
+            animation: wave 18s linear reverse infinite;
+            opacity: 0.8;
+        }
+        
+        .wave:nth-of-type(3) {
+            bottom: -2.5em;
+            animation: wave 20s -1s reverse infinite;
+            opacity: 0.9;
+        }
+        
+        @keyframes wave {
+            2% {
+                transform: translateX(1);
+            }
+        
+            25% {
+                transform: translateX(-25%);
+            }
+        
+            50% {
+                transform: translateX(-50%);
+            }
+        
+            75% {
+                transform: translateX(-25%);
+            }
+        
+            100% {
+                transform: translateX(1);
+            }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 </body>
 </html>
