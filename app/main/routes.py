@@ -22,17 +22,59 @@ def table():
 def generate_analytic(user_id):
     import json
     import time
+    if user_id == None:
+        user = current_user.get_id()
+    else:
+        user = user_id
     def analytic_update():
         import random
         while True:
-            mouths = [x for x in range(1, 12)]
-            mouth = random.choice(mouths)
+
+            def gen_dataset():
+                data = []
+                for i in range(1,13):
+                    data.append(len(models.Tasks.query.filter_by(completed_by=str(user), completed_mounth=i).all()))
+                return data
+            data = gen_dataset()
             json_data = json.dumps({
-                'mouth': str(mouth),
-                'tasks_comleted': len(models.Tasks.query.filter_by(completed_mounth=str(mouth), completed_by=current_user.get_id()).all())})
+                'mouth': [x for x in range(1, 13)],
+                'tasks_comleted': data
+            })
             #print(len(models.Tasks.query.filter_by(completed_mounth=str(mouth), completed_by=current_user.get_id()).all()))
             yield f'data:{json_data}\n\n'
-            time.sleep(3)
+            time.sleep(30)
+    response = Response(stream_with_context(analytic_update()), mimetype="text/event-stream")
+    response.headers["Cache-Control"] = "no-cache"
+    response.headers["X-Accel-Buffering"] = "no"
+    return response
+
+@main.route('/gen_analytic_daily/<int:user_id>', methods=['GET'])
+def generate_daily(user_id):
+    import json
+    import time
+    if user_id == None:
+        user = current_user.get_id()
+    else:
+        user = user_id
+
+    def analytic_update():
+        import random
+        while True:
+
+            def gen_dataset():
+                data = []
+                for i in range(1, 32):
+                    data.append(len(models.Tasks.query.filter_by(completed_by=str(user), completed_day=i).all()))
+                return data
+
+            json_data = json.dumps({
+                'days': [x for x in range(1, 32)],
+                'tasks_comleted': gen_dataset()
+            })
+            # print(len(models.Tasks.query.filter_by(completed_mounth=str(mouth), completed_by=current_user.get_id()).all()))
+            yield f'data:{json_data}\n\n'
+            time.sleep(30)
+
     response = Response(stream_with_context(analytic_update()), mimetype="text/event-stream")
     response.headers["Cache-Control"] = "no-cache"
     response.headers["X-Accel-Buffering"] = "no"

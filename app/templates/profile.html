@@ -49,7 +49,7 @@
                                     </div>
                                     <div class="form-item">
                                         <label for="email">Password</label>
-                                        <input type="text" name="Password" id="password" class="form-control">
+                                        <input type="password" name="Password" id="password" class="form-control">
                                     </div>
                                     <div class="form-item">
                                         <label for="telegramm">Telegramm</label>
@@ -71,7 +71,7 @@
                                                 var email = document.getElementById('email').value;
                                                 var login = document.getElementById('login').value;
                                                 var password = document.getElementById('password').value; 
-                                                var role = document.getElementById('password').value;
+                                                var role = document.getElementById('role').value;
                                                 var telegramm = document.getElementById('telegramm').value;
                                                 data = {
                                                     email:email,
@@ -189,7 +189,7 @@
                                 <div class="user_list">
                                     {% for user_r in users %}
                                         <div class="user {{ user_r.id }}" style="display: flex; flex-direction: row; justify-content: space-between; border: 1px solid #000; border-radius: 5px; padding: 15px; margin-top: 15px;">
-                                            <button style="border: 0; background-color: transparent;" onclick="link({{user_r.id}})"> <img src="{{ url_for('static', filename='img/user.png') }}" alt="" width="30" height="30"> ID:{{user_r.id}}</button>
+                                            <button style="border: 0; background-color: transparent;" onclick="link({{user_r.id}})"> <img src="{{ url_for('static', filename='img/user.png') }}" alt="" width="30" height="30"> ID:{{user_r.id}} | Role: {{user_r.role}}</button>
                                             <div class="delete_button" onclick="delete_user({{user_r.id}})">
                                                 {% if user.id == user_r.id %}
                                                     <button class="btn btn-danger" disabled>Удалить</button>    
@@ -235,12 +235,12 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="card-title">
-                            
+                                Year Task Analytic
                             </div>
                             <canvas id="canvas"></canvas>
                             <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
                 <script>
-                     $(document).ready(function () {
+        $(document).ready(function () {
         const config = {
             type: 'line',
             data: {
@@ -287,9 +287,7 @@
         };
 
         const context = document.getElementById('canvas').getContext('2d');
-
         const lineChart = new Chart(context, config);
-
         const source = new EventSource("/gen_analytic/{{user.id}}");
 
         source.onmessage = function (event) {
@@ -298,8 +296,8 @@
                 config.data.labels.shift();
                 config.data.datasets[0].data.shift();
             }
-            config.data.labels.push(data.mouth);
-            config.data.datasets[0].data.push(data.tasks_comleted);
+            config.data.labels = data.mouth;
+            config.data.datasets[0].data = data.tasks_comleted;
             lineChart.update();
         }
     });
@@ -307,7 +305,83 @@
                         </div>
                     </div>
                 </div>
+                <div class="row" style="padding-top: 30px;">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title">
+                                Daily Analytic
+                            </div>
+                            <canvas id="canvas1">
 
+                            </canvas>
+                            <script>
+                                $(document).ready(function () {
+        const config = {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: "Tasks",
+                    backgroundColor: 'rgb(255, 99, 132)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    data: [],
+                    fill: false,
+                }],
+            },
+            options: {
+                responsive: true,
+                title: {
+                    display: true,
+                    text: 'Analytic for mounth'
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'day'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Tasks'
+                        }
+                    }]
+                }
+            }
+        };
+
+        const context = document.getElementById('canvas1').getContext('2d');
+
+        const lineChart = new Chart(context, config);
+
+        const source = new EventSource("/gen_analytic_daily/{{user.id}}");
+
+        source.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+            if (config.data.labels.length === 20) {
+                config.data.labels.shift();
+                config.data.datasets[0].data.shift();
+            }
+            config.data.labels = data.days;
+            config.data.datasets[0].data = data.tasks_comleted;
+            lineChart.update();
+        }
+    });
+                            </script>
+                        </div>
+                    </div>
+                </div>
                
                 <!-- end -->
             </div>
