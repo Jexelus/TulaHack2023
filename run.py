@@ -4,7 +4,7 @@ import app
 
 def run():
     _app = app.create_app()
-    host_info = {'host': cfg['SERVER_IP'], 'port': 5000, 'debug': False}
+    host_info = {'host': cfg['SERVER_IP'], 'port': 5000, 'debug': True}
     _app.run(**host_info)
 
 

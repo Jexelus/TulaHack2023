@@ -13,6 +13,13 @@
                 <div class="card" style="width: 350px;">
                     <div class="card-body">
                         <h4 class="card-title" style="text-align: center; padding-bottom: 20px;">Авторизация</h4>
+                        {% with messages = get_flashed_messages() %}
+                            {% if messages %}
+                                {% for message in  messages %}
+                                    <p style="color: red; text-align: center;">{{message}}</p>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
                         <form>
                             <div class="from-group">
                                 <div class="group">      
@@ -22,9 +29,9 @@
                                     <label>Login or Email</label>
                                 </div>
                             </div>
-                            <div class="from-group" style="">
+                            <div class="from-group">
                                 <div class="group">      
-                                    <input type="text" required>
+                                    <input type="password" id="password" required>
                                     <span class="highlight"></span>
                                     <!-- <span class="bar"></span> -->
                                     <label>Password</label>
@@ -57,7 +64,28 @@
 </div >
     <script>
         function login(){
-
+            data = {
+                login_email: document.getElementById('login_email').value,
+                password: document.getElementById('password').value
+            }
+            fetch('/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                },
+                body: JSON.stringify({
+                    login_data: data,
+                }),
+            }).then(response => {
+                console.log(response.status)
+                if (response.status == 200){
+                    window.location.replace('/table')
+                }
+                else{
+                    alert('Wrong pass')
+                }
+            });
         }
     </script>
     <style>
