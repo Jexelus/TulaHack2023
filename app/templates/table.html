@@ -39,7 +39,7 @@
                     </button>
                 </div>
                 {% if current_user.role == 'root' or current_user.role == 'manager' %}
-                    <button class="btn btn-info">
+                    <button class="btn btn-info" id="btn-profile">
                         Профиль
                     </button>
                 {% endif %}
@@ -126,6 +126,11 @@
             }
         </style>
         <script>
+            $(function(){
+                $("#profile-btn").on('click', function(){
+                    window.location.replace('/profile');
+                });
+            });
             $(function (){
                 $(".collapse-button").on("click", function (){
                     $(".slide-bar, .container-tasks").toggleClass('active');
